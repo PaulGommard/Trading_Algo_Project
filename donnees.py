@@ -1,4 +1,4 @@
-api_key = 'null'
-api_key_secret = 'null'
-access_token = 'null'
-access_token_secret = 'null'
+api_key = 'cclFR0Wm5EKzL3yw8aZpnz5l7'
+api_key_secret = 'VBxWEJWuGVstpvk9ywcv2NmROyyEk50zEn4NVE9amlLaUbX4Jk'
+access_token = '997093563845566464-QAQPrdIkpU0oX6SqMQ86UEQcwQytuiJ'
+access_token_secret = 'eDuXs2AMYplykollxUhM0qTb2TPbWcd8GhdxhusIY6HFO'
