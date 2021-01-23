@@ -30,10 +30,16 @@ for tweet in tweets:
     tweet_polarity = analysis.polarity
     if(tweet_polarity > 0):
         positive += 1
+        print("Positive ----------------------------------------------------------------------------------")
+        print(final_text)
     elif(tweet_polarity < 0):
         negative += 1
+        print("NEGATIVE ----------------------------------------------------------------------------------")
+        print(final_text)
     else:
         neutral += 1
+        print("NEUTRAL ----------------------------------------------------------------------------------")
+        print(final_text)
     polarity += tweet_polarity
 
 
