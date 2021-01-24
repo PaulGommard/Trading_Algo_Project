@@ -43,7 +43,7 @@ for tweet in tweets:
     polarity += tweet_polarity
 
 
-print(f"Positive : {positive}")
-print(f"Neutral : {neutral}")
-print(f"Negative : {negative}")
+print("Positive : {positive}")
+print("Neutral : {neutral}")
+print("Negative : {negative}")
 
