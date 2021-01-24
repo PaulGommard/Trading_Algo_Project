@@ -32,11 +32,27 @@ window.config(background='#3CF1E9')
 label_title = Label(window, text="Trading Algorithmique", font=("Courrier", 20), bg = '#3CF1E9')
 label_title.pack()
 
+fig = Figure(figsize=(5, 5), dpi=100)
+axes = fig.add_subplot(111)
+axes.plot(0)
+
+canvas = FigureCanvasTkAgg(fig, master=window)
+canvas.draw()
+canvas.get_tk_widget().pack(side=Tkinter.TOP, fill=Tkinter.BOTH, expand=1)
+
+
+# toolbar = NavigationToolbar2TkAgg(canvas, window)
+# toolbar.update()
+# canvas.get_tk_widget().pack(side=Tkinter.TOP, fill=Tkinter.BOTH, expand=1)
+
 # Affichage graph
 def graph():
     df = data_stocks.GetPastData(entree.get())
-    plt.plot(df['Close'])
-    plt.show()
+    fig.add_subplot(111).plot(df['Close'])
+    axes.set_ylim(df['Close'].min(), df['Close'].max())
+    canvas.show()
+
+   
 
 # Button pour afficher le graph
 my_button = Button(window, text="Graph", command=graph)
