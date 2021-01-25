@@ -47,10 +47,10 @@ canvas = FigureCanvasTkAgg(fig, master=window)
 canvas.draw()
 canvas.get_tk_widget().pack(pady=20)
 
-# Toolbar og the graph
-toolbar = NavigationToolbar2Tk(canvas, window)
-toolbar.update()
-canvas.get_tk_widget().pack()
+# # Toolbar og the graph
+# toolbar = NavigationToolbar2Tk(canvas, window)
+# toolbar.update()
+# canvas.get_tk_widget().pack()
 
 # Table of buy and sell
 table = LabelFrame(window, text="Buy and sell",  height = 200, width = 1400)
@@ -64,18 +64,31 @@ colonne.heading(2, text="Close")
 colonne.heading(3, text="MACD")
 colonne.heading(4, text='e9')
 
-df = data_stocks.GetPastData("AAPL")
-
-colonne.insert("",1,"L01", text="Canada")
+# Put the value og the stock in the table
+def PutValueOnTable(stk):
+    df = data_stocks.GetPastData(stk)
+    for index, row in df.iterrows():
+        colonne.insert('', 'end',value=("Date", row['Close'], row['MACD'],row['e9']))
 
 # Affichage graph
 def graph():
+    # Clear the table
+    ClearTable()
+    # Clear the graph
+    fig.clf()
+    # Get the date of the stock
     df = data_stocks.GetPastData(entree.get())
     fig.add_subplot(111).plot(df['Close'])
+    # Zoom on the stock
     axes.set_ylim(df['Close'].min(), df['Close'].max())
-    canvas.show()
+    canvas.draw()
+    # Put all the value on the table
+    PutValueOnTable(entree.get())
 
-   
+# Clear the table
+def ClearTable():
+    for i in colonne.get_children():
+        colonne.delete(i)
 
 # Button pour afficher le graph
 my_button = Button(window, text="Graph", command=graph)
@@ -87,10 +100,6 @@ entree.pack()
 
 # Afficher
 window.mainloop()
-
-print(type(df['Close']))
-
-
 
 # df =  pd.DataFrame(columns=['Close', 'e9', 'MACD', 'e26', 'lastClose', 'e12', 'Position'])
 # url_TEL = 'https://fr.finance.yahoo.com/quote/TEL?p=TEL'
