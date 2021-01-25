@@ -7,11 +7,12 @@ from datetime import datetime
 from datetime import timedelta
 import bs4 as bs
 import data_stocks
-import Tkinter 
+import tkinter
 matplotlib.use("TkAgg")
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
-from Tkinter import *
+from tkinter import *
+import tkinter.ttk as tkk
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -23,27 +24,49 @@ window = Tk()
 
 # Personnalisation
 window.title("Trading Bot")
-window.geometry("1400x920")
-window.minsize(1400, 920)
-window.maxsize(1400, 920)
+window.geometry("1920x1080")
+window.minsize(1920, 1080)
+window.maxsize(1920, 1080)
 window.config(background='#3CF1E9')
 
 # Ajouter texte
 label_title = Label(window, text="Trading Algorithmique", font=("Courrier", 20), bg = '#3CF1E9')
-label_title.pack()
+label_title.pack(pady=5)
 
-fig = Figure(figsize=(5, 5), dpi=100)
+# # Canvas for graph
+# canvasGraph = Canvas(window, height = 500, width = 1500)
+# canvasGraph.pack(pady=30)
+
+# Figure for graph
+fig = Figure(figsize=(22,5), dpi=80, facecolor='#3CF1E9')
 axes = fig.add_subplot(111)
 axes.plot(0)
 
+# Insert the matplotlib graph into the canvasGraph
 canvas = FigureCanvasTkAgg(fig, master=window)
 canvas.draw()
-canvas.get_tk_widget().pack(side=Tkinter.TOP, fill=Tkinter.BOTH, expand=1)
+canvas.get_tk_widget().pack(pady=20)
 
+# Toolbar og the graph
+toolbar = NavigationToolbar2Tk(canvas, window)
+toolbar.update()
+canvas.get_tk_widget().pack()
 
-# toolbar = NavigationToolbar2TkAgg(canvas, window)
-# toolbar.update()
-# canvas.get_tk_widget().pack(side=Tkinter.TOP, fill=Tkinter.BOTH, expand=1)
+# Table of buy and sell
+table = LabelFrame(window, text="Buy and sell",  height = 200, width = 1400)
+table.pack(pady = 20)
+
+colonne = tkk.Treeview(table, columns=(1,2,3,4), show="headings", height="6")
+colonne.pack()
+
+colonne.heading(1, text="Date")
+colonne.heading(2, text="Close")
+colonne.heading(3, text="MACD")
+colonne.heading(4, text='e9')
+
+df = data_stocks.GetPastData("AAPL")
+
+colonne.insert("",1,"L01", text="Canada")
 
 # Affichage graph
 def graph():
