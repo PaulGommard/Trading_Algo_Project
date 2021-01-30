@@ -37,8 +37,8 @@ label_title.pack(pady=5)
 # canvasGraph = Canvas(window, height = 500, width = 1500)
 # canvasGraph.pack(pady=30)
 
-# Figure for graph
-fig = Figure(figsize=(22,5), dpi=80, facecolor='#3CF1E9')
+# Figure for stock graph
+fig = Figure(figsize=(22,5), dpi=80, facecolor='white')
 axes = fig.add_subplot(111)
 axes.plot(0)
 
@@ -46,6 +46,15 @@ axes.plot(0)
 canvas = FigureCanvasTkAgg(fig, master=window)
 canvas.draw()
 canvas.get_tk_widget().pack(pady=20)
+
+# Figure for stock graph
+figMACD = Figure(figsize=(22,2), dpi=80, facecolor='white')
+axes = fig.add_subplot(111)
+axes.plot(0)
+
+canvasMACD = FigureCanvasTkAgg(figMACD, master=window)
+canvasMACD.draw()
+canvasMACD.get_tk_widget().pack(pady=5)
 
 # # Toolbar og the graph
 # toolbar = NavigationToolbar2Tk(canvas, window)
