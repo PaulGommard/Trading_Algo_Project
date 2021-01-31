@@ -44,6 +44,20 @@ cursor.execute("""
     )
 """)
 
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS stock_price_minutes ( 
+        id INTEGER PRIMARY KEY, 
+        stock_id INTEGER, 
+        date NOT NULL, 
+        open,
+        high, 
+        low, 
+        close NOT NULL, 
+        volume, 
+        FOREIGN KEY (stock_id) REFERENCES stock (id)
+    )
+""")
+
 strategies = ['macd']
 
 # for strategy in strategies:
