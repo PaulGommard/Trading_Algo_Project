@@ -9,7 +9,7 @@ connection.row_factory = sqlite3.Row
 cursor = connection.cursor()
 
 # Get symbol and company from the database
-cursor.execute("""SELECT symbol, company FROM stock""")
+cursor.execute("""SELECT symbol, name FROM stock""")
 rows = cursor.fetchall()
 symbols = [row['symbol'] for row in rows]
 
@@ -22,7 +22,7 @@ for asset in assets:
     try:
         if asset.status == 'active' and asset.tradable:
             print(f"Added a new stock {asset.symbol} {asset.name}")
-            cursor.execute("INSERT INTO stock (symbol, company) VALUES (?, ?)", (asset.symbol, asset.name))
+            cursor.execute("INSERT INTO stock (symbol, name, exchange) VALUES (?, ?, ?)", (asset.symbol, asset.name, asset.exchange))
     except Exception as e:
         print(asset.symbol)
         print(e)

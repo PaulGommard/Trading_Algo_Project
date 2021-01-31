@@ -155,11 +155,11 @@ def stock_detail(request: Request, symbol):
     row = cursor.fetchone()
 
     cursor.execute("""
-        SELECT * FROM stock_price WHERE stock_id = ?
+        SELECT * FROM stock_price WHERE stock_id = ? ORDER BY date DESC
     """, (row['id'],))
     prices = cursor.fetchall()
 
-    return templates.TemplateResponse("stock_detail.html", {"request": request, "stock": row, "prices": prices})
+    return templates.TemplateResponse("stock_detail.html", {"request": request, "stock": row, "bars": prices})
 
 
 
