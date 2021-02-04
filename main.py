@@ -124,7 +124,6 @@ from fastapi.templating import Jinja2Templates
 from datetime import date
 from fastapi.responses import RedirectResponse
 
-
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
@@ -133,7 +132,7 @@ def index(request: Request):
     stock_filter = request.query_params.get('filter', False)
 
     # Get the app data already created
-    connection = sqlite3.connect('app.db')
+    connection = sqlite3.connect(config.DATA_BASE)
     connection.row_factory = sqlite3.Row
 
     # Create connection
@@ -160,7 +159,7 @@ def index(request: Request):
 @app.get("/stock/{symbol}")
 def stock_detail(request: Request, symbol):
     # Get the app data already created
-    connection = sqlite3.connect('app.db')
+    connection = sqlite3.connect(config.DATA_BASE)
     connection.row_factory = sqlite3.Row
 
     # Create connection
@@ -186,7 +185,7 @@ def stock_detail(request: Request, symbol):
 
 @app.post("/apply_strategy")
 def apply_strategy(strategy_id: int = Form(...), stock_id: int = Form(...)):
-    connection = sqlite3.connect('app.db')
+    connection = sqlite3.connect(config.DATA_BASE)
     cursor = connection.cursor()
     
     cursor.execute("""
@@ -201,7 +200,7 @@ def apply_strategy(strategy_id: int = Form(...), stock_id: int = Form(...)):
 @app.get("/strategy/{strategy_id}")
 def strategy(request: Request, strategy_id):
     # Get the app data already created
-    connection = sqlite3.connect('app.db')
+    connection = sqlite3.connect(config.DATA_BASE)
     connection.row_factory = sqlite3.Row
 
     # Create connection

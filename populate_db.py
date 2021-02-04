@@ -2,7 +2,7 @@ import sqlite3, config
 import alpaca_trade_api as tradeapi
 
 # Get the app data already created
-connection = sqlite3.connect('app.db')
+connection = sqlite3.connect(config.DATA_BASE)
 connection.row_factory = sqlite3.Row
 
 # Create connection

@@ -1,7 +1,7 @@
 import sqlite3, config
 import alpaca_trade_api as tradeapi
 
-connection = sqlite3.connect('app.db')
+connection = sqlite3.connect(config.DATA_BASE)
 connection.row_factory = sqlite3.Row
 
 cursor = connection.cursor()

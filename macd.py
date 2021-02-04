@@ -1,7 +1,7 @@
 import yfinance as yf
 from datetime import datetime
 from datetime import timedelta
-import pandas
+import pandas as pd
 from fastapi import FastAPI, Request
 import sqlite3, config
 import alpaca_trade_api as tradeapi
@@ -9,34 +9,25 @@ import time
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+import submit_orders
 
 api = tradeapi.REST(config.API_KEY, config.SECRET_KEY, base_url=config.BASE_URL)
 
-# Get the date equal to the n days before now
-def GetPastDate(days):
-    date = str(datetime.now() - timedelta(days=days))
-    date = date[0:10]
-    return date
-
-# Get the actual price the stock
-def GetActualPrice(symbol):
-    try:
-        url = f'https://fr.finance.yahoo.com/quote/{symbol}?p=ABT'
-        reponse = requests.get(url)
-        soup = BeautifulSoup(reponse.text, 'lxml')
-
-        price = soup.find_all('div', {'class': 'My(6px) Pos(r) smartphone_Mt(6px)'})[0].find('span').text
-        price = price.replace(u'\xa0', '')
-        price = price.replace(',', '.')
-        price = price.strip()
-        return price
-
-    except:
-        print(f"Don't find the price for {symbol}")
-        time.sleep(2)
-        GetActualPrice(symbol)
-
-connection = sqlite3.connect('app.db')
+def ApplyStrategy(symbol):
+    if(len(df) > 26):
+        df['e12'] = df.close.ewm(span=12, adjust=False).mean()
+        df['e26'] = df.close.ewm(span=26, adjust=False).mean()
+        df['MACD'] = df['e12'] - df['e26']
+        df['e9'] = df['MACD'].ewm(span=9, adjust=False).mean()
+    
+    row = len(df) - 1
+    if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row, 'e9']:
+        submit_orders.Buy(symbol)
+    elif df.loc[row, 'MACD'] < df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] > df.loc[row, 'e9']:
+        submit_orders.Sell(symbol)
+        
+    
+connection = sqlite3.connect(config.DATA_BASE)
 connection.row_factory = sqlite3.Row
 cursor = connection.cursor()
 
@@ -56,22 +47,20 @@ cursor.execute("""
 stocks = cursor.fetchall()
 symbols = [stock['symbol'] for stock in stocks]
 
+
 for symbol in symbols:
-    close = GetActualPrice(symbol)
-    now = datetime.now().isoformat()
-    print(symbol)
     cursor.execute("""select * from stock where symbol = (?)
     """, (symbol,))
     stock_id = cursor.fetchone()['id']
-    
-    cursor.execute("""
-    INSERT INTO stock_price_minutes (stock_id, date, close) VALUES (?, ?, ?)
-    """, (stock_id, now, close,))
+
+    df = pd.read_sql_query(f"""select * from stock_price_minutes where stock_id = ({stock_id}) ORDER BY date DESC""" ,connection)
+
+    ApplyStrategy(symbol)
 
     connection.commit()
-    
-    # data = yf.Ticker(symbol)
-    # df = data.history(interval='1m', start=GetPastDate(7), end=GetPastDate(0))
-    # print(df)
+
     
 
+""" data = yf.Ticker(symbol)
+    df = data.history(interval='1m', start=GetPastDate(7), end=GetPastDate(0))
+    print(df) """
