@@ -21,9 +21,9 @@ def ApplyStrategy(symbol):
         df['e9'] = df['MACD'].ewm(span=9, adjust=False).mean()
     
     row = len(df) - 1
-    if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row, 'e9']:
+    if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9']:
         submit_orders.Buy(symbol)
-    elif df.loc[row, 'MACD'] < df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] > df.loc[row, 'e9']:
+    elif df.loc[row, 'MACD'] < df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] > df.loc[row - 1, 'e9']:
         submit_orders.Sell(symbol)
         
     
@@ -60,7 +60,7 @@ for symbol in symbols:
     connection.commit()
 
     
-
+connection.close()
 """ data = yf.Ticker(symbol)
     df = data.history(interval='1m', start=GetPastDate(7), end=GetPastDate(0))
     print(df) """

@@ -30,7 +30,6 @@ def GetActualPrice(symbol):
     except:
         print(f"Don't find the price for {symbol}")
         time.sleep(2)
-        GetActualPrice(symbol)
 
 
 connection = sqlite3.connect(config.DATA_BASE)
@@ -61,3 +60,4 @@ for stock_id in stocks_id:
     connection.commit()
 
 
+connection.close()

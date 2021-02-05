@@ -123,6 +123,12 @@ import sqlite3, config
 from fastapi.templating import Jinja2Templates
 from datetime import date
 from fastapi.responses import RedirectResponse
+import pandas as pd
+from pychartjs import BaseChart, ChartType, Color 
+from flask import Flask, render_template, jsonify
+import json, random
+from django.shortcuts import render
+from random import sample
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -180,7 +186,25 @@ def stock_detail(request: Request, symbol):
     """, (row['id'],))
     prices = cursor.fetchall()
 
-    return templates.TemplateResponse("stock_detail.html", {"request": request, "stock": row, "bars": prices, "strategies": strategies})
+
+        # Get symbol and company from the database
+    cursor.execute("""SELECT * FROM stock_price_minutes where stock_id = 9074""")
+
+    #df = pd.read_sql_query(f"""SELECT close FROM stock_price_minutes where stock_id = 9074""" ,connection)
+
+    sentiments = cursor.fetchall()
+    closes = []
+    dates = []
+
+    for sentiment in sentiments:
+        close = sentiment['close']
+        closes.append(close)
+        date = sentiment['date']
+        dates.append(date)
+
+    closes = [float(i) for i in closes]
+
+    return templates.TemplateResponse("stock_detail.html", {"request": request, "stock": row, "bars": prices, "strategies": strategies,"closes": closes, "dates": dates})
 
 
 @app.post("/apply_strategy")
@@ -225,3 +249,34 @@ def strategy(request: Request, strategy_id):
     return templates.TemplateResponse("strategy.html", {"request": request, "stocks": stocks, "strategy": strategy})
 
 
+@app.get("/test")
+def test(request: Request):
+
+    # Get the app data already created
+    connection = sqlite3.connect(config.DATA_BASE)
+    connection.row_factory = sqlite3.Row
+
+    # Create connection
+    cursor = connection.cursor()
+
+    # Get symbol and company from the database
+    cursor.execute("""SELECT * FROM stock_price_minutes where stock_id = 9074""")
+
+    #df = pd.read_sql_query(f"""SELECT close FROM stock_price_minutes where stock_id = 9074""" ,connection)
+
+    rows = cursor.fetchall()
+    closes = []
+    dates = []
+
+    for row in rows:
+        close = row['close']
+        closes.append(close)
+        date = row['date']
+        dates.append(date)
+
+    closes = [float(i) for i in closes]
+    data = json.dumps(closes)
+    labels = json.dumps(dates)
+    
+    return templates.TemplateResponse("test.html", {"request": request, "stocks": closes, "dates": dates})
+    
