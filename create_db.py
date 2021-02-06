@@ -59,6 +59,17 @@ cursor.execute("""
     )
 """)
 
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS twitter_analysis ( 
+        id INTEGER PRIMARY KEY, 
+        stock_id INTEGER, 
+        date NOT NULL, 
+        polarity NOT NULL,
+        volume NOT NULL,
+        FOREIGN KEY (stock_id) REFERENCES stock (id)
+    )
+""")
+
 strategies = ['macd']
 
 # for strategy in strategies:

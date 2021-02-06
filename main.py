@@ -188,23 +188,27 @@ def stock_detail(request: Request, symbol):
 
 
         # Get symbol and company from the database
-    cursor.execute("""SELECT * FROM stock_price_minutes where stock_id = 9074""")
+    cursor.execute("""SELECT * FROM twitter_analysis where stock_id = (?)""", (row['id'],))
 
     #df = pd.read_sql_query(f"""SELECT close FROM stock_price_minutes where stock_id = 9074""" ,connection)
 
     sentiments = cursor.fetchall()
-    closes = []
+    polaritys = []
     dates = []
+    volumes = []
 
     for sentiment in sentiments:
-        close = sentiment['close']
-        closes.append(close)
+        polarity = sentiment['polarity']
+        polaritys.append(polarity)
         date = sentiment['date']
         dates.append(date)
+        volume = sentiment['volume']
+        volumes.append(volume)
 
-    closes = [float(i) for i in closes]
+    polaritys = [float(i) for i in polaritys]
+    volumes= [float(i) for i in volumes]
 
-    return templates.TemplateResponse("stock_detail.html", {"request": request, "stock": row, "bars": prices, "strategies": strategies,"closes": closes, "dates": dates})
+    return templates.TemplateResponse("stock_detail.html", {"request": request, "stock": row, "bars": prices, "strategies": strategies,"polaritys": polaritys, "dates": dates, "volumes": volumes})
 
 
 @app.post("/apply_strategy")

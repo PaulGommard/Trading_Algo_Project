@@ -38,24 +38,30 @@
     <script>
         var ctx = document.getElementById('myChart').getContext('2d');
         var chart = new Chart(ctx, {
-        // The type of chart we want to create
-        type: 'line',
+            type: 'bar',
 
-        // The data for our dataset
-        data: {
-        labels: {{dates|safe}},
-        datasets: [{
-            label: 'My First dataset',
-            
-            borderColor: 'rgb(255, 99, 132)',
-            data:{{closes|safe}}
-        }]
-        },
+            data: {
+                labels: {{dates|safe}},
+                datasets: [{
+                    type: 'line',
+                    label: 'Polarity',
+                    
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: {{polaritys|safe}}
+                    }, {
+                    type:'bar',
+                    label: 'Volume',
+                    data:{{volumes|safe}},
+                    
+                }]
 
-        // Configuration options go here
-        options: {}
-        })
-        </script>
+                
+            },
+
+            // Configuration options go here
+            options: {}
+            });
+    </script>
 
 
 <form method="post" action="/apply_strategy">
