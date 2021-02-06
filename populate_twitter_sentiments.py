@@ -36,7 +36,7 @@ def GetPolarity(tweet):
 def GetData(symnol):
     hastag = f'#{symbol}'
     print(hastag)
-    query = tw.Cursor(api.search, q=symbol, lang='en').items(100)
+    query = tw.Cursor(api.search, q=symbol, lang='en').items(500)
 
     tweets = [{'Tweet':tweet.text, 'Timestamp':tweet.created_at, "Polarity":GetPolarity(tweet)} for tweet in query]
 
