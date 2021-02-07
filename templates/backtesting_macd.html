@@ -1,0 +1,151 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+
+<h1><a href="/">Stocks </a> <i class="angle right icon"></i>Backtesting MACD {{stock.name}}</h1>
+<div style="width: 100%">
+    <canvas id="Close" width="200" height="100"></canvas>
+    <canvas id="MACD" width="300" height="100"></canvas>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+            var ctx = document.getElementById('Close').getContext('2d');
+            // var data_array_close = {{closes|safe}};
+            // var data_array_MACD = {{e9|safe}};
+            // function round(x) { 
+            //     return Math.ceil(x / 5) * 5; 
+            //     }
+            var chart2 = new Chart(ctx, {
+            type: 'bar',
+
+            data: {
+                labels: {{dates|safe}},
+                datasets: [{
+                    type: 'line',
+                    label: 'Close',
+                    fill: false,
+                    borderWidth: 2,
+                    // id: "y-axis-0",
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: {{closes|safe}}
+                    }
+                    // ,
+                    // {
+                    // type: 'line',
+                    // label: 'MACD',
+                    
+                    // borderColor: 'rgb(80, 117, 232)',
+                    // fill: false,
+                    // borderWidth: 2,
+                    // // id: "y-axis-1",
+                    // data: {{MACD|safe}}
+                    // }, 
+                    
+                    // {
+                    // type:'line',
+                    // label: 'e9',
+                    // borderColor: 'rgb(226, 46, 46)',
+                    // fill: false,
+                    // // id: "y-axis-1",
+                    // borderWidth: 2,
+                    // data: {{e9|safe}}
+            
+                ]           
+            },
+
+            // Configuration options go here
+            options: {
+                elements: {
+                    point:{
+                        radius: 0
+                    }
+                // },
+                // scales: {
+                //     xAxes: [{
+                //     stacked: true
+                //     }],
+                //     yAxes: [{
+                //     stacked: true,
+                //     position: "left",
+                //     id: "y-axis-0",
+                //     ticks: {
+                //         min: Math.min.apply(this, data_array_close),
+                //         max: Math.max.apply(this, data_array_close) 
+                
+                //     }
+                //     }, {
+                //     stacked: true,
+                //     position: "right",
+                //     id: "y-axis-1",
+                //     ticks: {
+                //         min: Math.min.apply(this, data_array_MACD)-5,
+                //         max: Math.max.apply(this, data_array_MACD)+5
+                
+                //     }
+                //     }]
+                }
+            }
+            });
+
+            var ctx = document.getElementById('MACD').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+
+            data: {
+                labels: {{dates|safe}},
+                datasets: [{
+                    type: 'line',
+                    label: 'MACD',
+                    
+                    borderColor: 'rgb(80, 117, 232)',
+                    fill: false,
+                    borderWidth: 2,
+                    data: {{MACD|safe}}
+                    }, {
+                    type:'line',
+                    label: 'e9',
+                    borderColor: 'rgb(226, 46, 46)',
+                    fill: false,
+                    borderWidth: 2,
+                    data: {{e9|safe}}
+                }]
+
+                
+            },
+
+            // Configuration options go here
+            options: {
+                elements: {
+                    point:{
+                        radius: 0
+                    }
+                }
+  }
+            });
+    </script>
+
+
+ 
+<!-- <h2>Order</h2>
+<table class="ui striped table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Close</th>
+            <th>MACD</th>
+            <th>e9</th>
+            <th>Order</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{df}}
+    </tbody>
+</table>
+    
+    {{ stock.name}} -->
+
+{% endblock %}

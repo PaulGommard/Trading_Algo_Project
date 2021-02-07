@@ -78,4 +78,3 @@ strategies = ['macd']
 #     """, (strategy,))
 
 connection.commit()
-

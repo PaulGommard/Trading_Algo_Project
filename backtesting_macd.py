@@ -24,7 +24,7 @@ def GetPastData(symbol):
     # df1 = data.history(interval='1m', start=GetPastDate(28), end=GetPastDate(21))
     # df2 = data.history(interval='1m', start=GetPastDate(21), end=GetPastDate(14))
     # df3 = data.history(interval='1m', start=GetPastDate(14), end=GetPastDate(7))
-    df4 = data.history(interval='1m', start=GetPastDate(1), end=GetPastDate(0))
+    df4 = data.history(interval='1m', start=GetPastDate(2), end=GetPastDate(0))
     # dataDF = pandas.concat([df1, df2, df3, df4])
     dataDF = df4
 
@@ -44,39 +44,41 @@ def GetPastData(symbol):
 def BackTestingMACD(df):
     for row in range(1, len(df)):
         if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9']:
-            print("BUY")
-            print(df.loc[row])
+            df.loc[row, 'Order'] = 'buy'
         elif df.loc[row, 'MACD'] < df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] > df.loc[row - 1, 'e9']:
-            print("SELL")
-            print(df.loc[row])
+            df.loc[row, 'Order'] = 'sell'
+        else:
+            df.loc[row, 'Order'] = 'null'
+    
+    return df
 
-connection = sqlite3.connect(config.DATA_BASE)
-connection.row_factory = sqlite3.Row
-cursor = connection.cursor()
+# connection = sqlite3.connect(config.DATA_BASE)
+# connection.row_factory = sqlite3.Row
+# cursor = connection.cursor()
 
-cursor.execute("""
-    select id from strategy where name = 'macd'
-    """)
+# cursor.execute("""
+#     select id from strategy where name = 'macd'
+#     """)
 
-strategy_id = cursor.fetchone()['id']
+# strategy_id = cursor.fetchone()['id']
 
-cursor.execute("""
-    select symbol, name
-    from stock
-    join stock_strategy on stock_strategy.stock_id = stock.id
-    where stock_strategy.strategy_id = ?
-""", (strategy_id,))
+# cursor.execute("""
+#     select symbol, name
+#     from stock
+#     join stock_strategy on stock_strategy.stock_id = stock.id
+#     where stock_strategy.strategy_id = ?
+# """, (strategy_id,))
 
-stocks = cursor.fetchall()
-symbols = [stock['symbol'] for stock in stocks]
+# stocks = cursor.fetchall()
+# symbols = [stock['symbol'] for stock in stocks]
 
 
-# for symbol in symbols:
+# # for symbol in symbols:
     
 
-df = GetPastData("AAPL")
+# df = GetPastData('TSLA')
 
-BackTestingMACD(df)
+# BackTestingMACD(df)
 
     
-connection.close()
+# connection.close()

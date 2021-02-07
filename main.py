@@ -129,6 +129,7 @@ from flask import Flask, render_template, jsonify
 import json, random
 from django.shortcuts import render
 from random import sample
+import backtesting_macd
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -252,6 +253,30 @@ def strategy(request: Request, strategy_id):
 
     return templates.TemplateResponse("strategy.html", {"request": request, "stocks": stocks, "strategy": strategy})
 
+@app.get("/backtesting/{symbol}")
+def backtesting(request: Request, symbol):
+    # Get the app data already created
+    connection = sqlite3.connect(config.DATA_BASE)
+    connection.row_factory = sqlite3.Row
+
+    # Create connection
+    cursor = connection.cursor()
+
+
+    # Get symbol and company from the database
+    cursor.execute("""SELECT id, symbol, name FROM stock WHERE symbol = ?""", (symbol,))
+    row = cursor.fetchone()
+
+    df = backtesting_macd.BackTestingMACD(backtesting_macd.GetPastData(symbol))
+
+    MACD = [float(i) for i in df['MACD']]
+    e9 = [float(i) for i in df['e9']]
+    closes = [float(i) for i in df['Close']]
+    dates = [str(i) for i in df['Date']]
+
+    html_df = df.to_html()
+    
+    return templates.TemplateResponse("backtesting_macd.html", {"request": request, "stock": row, "MACD": MACD, 'e9': e9, "closes": closes, "dates": dates, "df": df})
 
 @app.get("/test")
 def test(request: Request):
