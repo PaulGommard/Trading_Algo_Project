@@ -130,7 +130,7 @@
 
 
  
-<!-- <h2>Order</h2>
+<h2>Order</h2>
 <table class="ui striped table">
     <thead>
         <tr>
@@ -142,10 +142,16 @@
         </tr>
     </thead>
     <tbody>
-        {{df}}
+        {% for bar in df_order %}
+            <tr>
+                <td>{{ bar["Date"]}}</td>
+                <td>{{ bar["Close"]}}</td>
+                <td>{{ bar["MACD"]}}</td>
+                <td>{{ bar["e9"]}}</td>
+                <td>{{ bar["Order"]}}</td>
+            </tr>
+            {%endfor%}
     </tbody>
 </table>
-    
-    {{ stock.name}} -->
 
 {% endblock %}

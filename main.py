@@ -188,7 +188,7 @@ def stock_detail(request: Request, symbol):
     prices = cursor.fetchall()
 
 
-        # Get symbol and company from the database
+    # Get symbol and company from the database
     cursor.execute("""SELECT * FROM twitter_analysis where stock_id = (?)""", (row['id'],))
 
     #df = pd.read_sql_query(f"""SELECT close FROM stock_price_minutes where stock_id = 9074""" ,connection)
@@ -274,9 +274,10 @@ def backtesting(request: Request, symbol):
     closes = [float(i) for i in df['Close']]
     dates = [str(i) for i in df['Date']]
 
-    html_df = df.to_html()
+    df_filtred = df[(df.Order == 'buy') | (df.Order == 'sell')]
+    print(df_filtred)
     
-    return templates.TemplateResponse("backtesting_macd.html", {"request": request, "stock": row, "MACD": MACD, 'e9': e9, "closes": closes, "dates": dates, "df": df})
+    return templates.TemplateResponse("backtesting_macd.html", {"request": request, "stock": row, "MACD": MACD, 'e9': e9, "closes": closes, "dates": dates, "df_order": df_filtred.to_dict(orient='records')})
 
 @app.get("/test")
 def test(request: Request):
