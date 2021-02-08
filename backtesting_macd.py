@@ -24,26 +24,32 @@ def GetPastData(symbol):
     # df1 = data.history(interval='1m', start=GetPastDate(28), end=GetPastDate(21))
     # df2 = data.history(interval='1m', start=GetPastDate(21), end=GetPastDate(14))
     # df3 = data.history(interval='1m', start=GetPastDate(14), end=GetPastDate(7))
-    df4 = data.history(interval='1m', start=GetPastDate(5), end=GetPastDate(0))
+    try:
+        dataDF = data.history(interval='1m', start=GetPastDate(3), end=GetPastDate(0))
+        del dataDF['Open']
+        del dataDF['Dividends']
+        del dataDF['Stock Splits']
+
+        dataDF.reset_index(level=0, inplace=True)
+        dataDF.columns = ['Date', 'Close', 'High', 'Low', 'Volume']
+        dataDF['e12'] = dataDF.Close.ewm(span=12, adjust=False).mean()
+        dataDF['e26'] = dataDF.Close.ewm(span=26, adjust=False).mean()
+        dataDF['MACD'] = dataDF['e12'] - dataDF['e26']
+        dataDF['e9'] = dataDF['MACD'].ewm(span=9, adjust=False).mean()
+        
+    except Exception:
+        d = {'Date': [0], 'Close': [0],'High': [0], 'Low': [0],'Volume': [0], 'e12': [0],'e26': [0], 'MACD': [0],'e9': [0]}
+        dataDF = pd.DataFrame(data=d)
+
+    return dataDF    
     # dataDF = pandas.concat([df1, df2, df3, df4])
-    dataDF = df4
 
-    del dataDF['Open']
-    del dataDF['Dividends']
-    del dataDF['Stock Splits']
-
-    dataDF.reset_index(level=0, inplace=True)
-    dataDF.columns = ['Date', 'Close', 'High', 'Low', 'Volume']
-    dataDF['e12'] = dataDF.Close.ewm(span=12, adjust=False).mean()
-    dataDF['e26'] = dataDF.Close.ewm(span=26, adjust=False).mean()
-    dataDF['MACD'] = dataDF['e12'] - dataDF['e26']
-    dataDF['e9'] = dataDF['MACD'].ewm(span=9, adjust=False).mean()
-    return dataDF
+    
 
 
-def BackTestingMACD(df):
+def BackTestingMACD(df):    
     for row in range(1, len(df)):
-        if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9']:
+        if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9'] and df.loc[row, 'MACD'] < 0:
             df.loc[row, 'Order'] = 'buy'
         elif df.loc[row, 'MACD'] < df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] > df.loc[row - 1, 'e9']:
             df.loc[row, 'Order'] = 'sell'
@@ -54,24 +60,26 @@ def BackTestingMACD(df):
 
 
 def CalculateBenef(df):
-    initial_budget = df.loc[0, 'Close']
-    budget = initial_budget
-    last_order = "sell"
+    benefice = 0
+    if(len(df) > 2):
+        initial_budget = df.loc[0, 'Close']
+        budget = initial_budget
+        last_order = "sell"
 
-    for row in range(1, len(df)):
-        if df.loc[row, 'Order'] == 'buy' and last_order == "sell":
-            budget = budget - df.loc[row, 'Close']
-            last_order = 'buy'
-        elif df.loc[row, 'Order'] == 'sell' and last_order == "buy": 
-            budget = budget + df.loc[row, 'Close']
-            last_order = "sell"
-    
-    if(last_order == 'buy'):
-        budget = budget + df.loc[len(df) - 1, 'Close']
+        for row in range(1, len(df)):
+            if df.loc[row, 'Order'] == 'buy' and last_order == "sell":
+                budget = budget - df.loc[row, 'Close']
+                last_order = 'buy'
+            elif df.loc[row, 'Order'] == 'sell' and last_order == "buy": 
+                budget = budget + df.loc[row, 'Close']
+                last_order = "sell"
         
-    
-    benefice = budget - initial_budget
-    benefice = (benefice * 100) / initial_budget
+        if(last_order == 'buy'):
+            budget = budget + df.loc[len(df) - 1, 'Close']
+            
+        
+        benefice = budget - initial_budget
+        benefice = (benefice * 100) / initial_budget
 
     return benefice
 

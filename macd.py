@@ -21,7 +21,7 @@ def ApplyStrategy(symbol):
         df['e9'] = df['MACD'].ewm(span=9, adjust=False).mean()
     
     row = len(df) - 1
-    if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9']:
+    if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9'] and df.loc[row, 'MACD'] < 0:
         submit_orders.Buy(symbol)
     elif df.loc[row, 'MACD'] < df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] > df.loc[row - 1, 'e9']:
         submit_orders.Sell(symbol)
@@ -54,6 +54,7 @@ for symbol in symbols:
     stock_id = cursor.fetchone()['id']
 
     df = pd.read_sql_query(f"""select * from stock_price_minutes where stock_id = ({stock_id}) ORDER BY date DESC""" ,connection)
+    print(df)
 
     ApplyStrategy(symbol)
 

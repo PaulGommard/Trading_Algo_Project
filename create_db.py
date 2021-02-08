@@ -70,6 +70,17 @@ cursor.execute("""
     )
 """)
 
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS backtesting_macd ( 
+        id INTEGER PRIMARY KEY, 
+        stock_id INTEGER, 
+        date NOT NULL, 
+        benefice NOT NULL, 
+        volume_order NOT NULL, 
+        FOREIGN KEY (stock_id) REFERENCES stock (id)
+    )
+""")
+
 strategies = ['macd']
 
 # for strategy in strategies:
