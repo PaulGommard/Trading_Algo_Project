@@ -2,9 +2,10 @@
 
 {% block content %}
     <h1><a href="/">Stocks </a> <i class="angle right icon"></i> {{ stock.name }}</h1>
-   <!-- TradingView Widget BEGIN -->
+
+  <!-- TradingView Widget BEGIN -->
 <div class="tradingview-widget-container">
-    <div id="tradingview_d7f51"></div>
+    <div id="tradingview_bdac9"></div>
     <div class="tradingview-widget-copyright"><a href="https://fr.tradingview.com/symbols/NASDAQ-AAPL/" rel="noopener" target="_blank"><span class="blue-text">AAPL graphique</span></a> par TradingView</div>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script type="text/javascript">
@@ -13,7 +14,7 @@
     "width": "100%",
     "height": 610,
     "symbol": '{{ stock.exchange }}:{{ stock.symbol }}',
-    "interval": "D",
+    "interval": "1",
     "timezone": "Europe/Paris",
     "theme": "dark",
     "style": "1",
@@ -21,11 +22,11 @@
     "toolbar_bg": "#f1f3f6",
     "enable_publishing": false,
     "allow_symbol_change": true,
-    "container_id": "tradingview_d7f51"
+    "container_id": "tradingview_bdac9"
   }
     );
     </script>
-</div>
+  </div>
   <!-- TradingView Widget END -->
 
 
@@ -63,7 +64,7 @@
             });
     </script>
 
-
+<!-- Apply Stategy Boutton -->
 <form method="post" action="/apply_strategy">
     <select name="strategy_id">
         {% for strategy in strategies %}
@@ -72,6 +73,16 @@
     </select>
     <input type="text" name="stock_id" value="{{ stock.id }}" />
     <input type="submit" value="Apply Strategy" />
+</form>
+<!-- Calculate backtesting stategy -->
+<form method="post" action="/backtesting">
+    <select name="strategy_id">
+        {% for strategy in strategies %}
+            <option value="{{ strategy.id }}">{{ strategy.name }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" name="stock_id" value="{{ stock.id }}" />
+    <input type="submit" value="Backtesting" />
 </form>
   <h2>Prices</h2>
     <table class="ui striped table">

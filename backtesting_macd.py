@@ -24,7 +24,7 @@ def GetPastData(symbol):
     # df1 = data.history(interval='1m', start=GetPastDate(28), end=GetPastDate(21))
     # df2 = data.history(interval='1m', start=GetPastDate(21), end=GetPastDate(14))
     # df3 = data.history(interval='1m', start=GetPastDate(14), end=GetPastDate(7))
-    df4 = data.history(interval='1m', start=GetPastDate(2), end=GetPastDate(0))
+    df4 = data.history(interval='1m', start=GetPastDate(5), end=GetPastDate(0))
     # dataDF = pandas.concat([df1, df2, df3, df4])
     dataDF = df4
 
@@ -52,6 +52,30 @@ def BackTestingMACD(df):
     
     return df
 
+
+def CalculateBenef(df):
+    initial_budget = df.loc[0, 'Close']
+    budget = initial_budget
+    last_order = "sell"
+
+    for row in range(1, len(df)):
+        if df.loc[row, 'Order'] == 'buy' and last_order == "sell":
+            budget = budget - df.loc[row, 'Close']
+            last_order = 'buy'
+        elif df.loc[row, 'Order'] == 'sell' and last_order == "buy": 
+            budget = budget + df.loc[row, 'Close']
+            last_order = "sell"
+    
+    if(last_order == 'buy'):
+        budget = budget + df.loc[len(df) - 1, 'Close']
+        
+    
+    benefice = budget - initial_budget
+    benefice = (benefice * 100) / initial_budget
+
+    return benefice
+
+
 # connection = sqlite3.connect(config.DATA_BASE)
 # connection.row_factory = sqlite3.Row
 # cursor = connection.cursor()
@@ -78,7 +102,9 @@ def BackTestingMACD(df):
 
 # df = GetPastData('TSLA')
 
-# BackTestingMACD(df)
+# print(BackTestingMACD(df))
+
+# print(CalculateBenef(df))
 
     
 # connection.close()

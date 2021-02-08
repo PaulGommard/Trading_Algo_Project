@@ -253,8 +253,13 @@ def strategy(request: Request, strategy_id):
 
     return templates.TemplateResponse("strategy.html", {"request": request, "stocks": stocks, "strategy": strategy})
 
-@app.get("/backtesting/{symbol}")
-def backtesting(request: Request, symbol):
+@app.post("/backtesting")
+def backtesting(strategy_id: int = Form(...), stock_id: int = Form(...)):
+
+    return RedirectResponse(url=f"/backtesting/{strategy_id}/{stock_id}", status_code=303)
+
+@app.get("/backtesting/{startegy_id}/{stock_id}")
+def apply_backtesting(request: Request, stock_id):
     # Get the app data already created
     connection = sqlite3.connect(config.DATA_BASE)
     connection.row_factory = sqlite3.Row
@@ -262,12 +267,11 @@ def backtesting(request: Request, symbol):
     # Create connection
     cursor = connection.cursor()
 
-
     # Get symbol and company from the database
-    cursor.execute("""SELECT id, symbol, name FROM stock WHERE symbol = ?""", (symbol,))
-    row = cursor.fetchone()
-
-    df = backtesting_macd.BackTestingMACD(backtesting_macd.GetPastData(symbol))
+    cursor.execute("""SELECT id, symbol, name FROM stock WHERE id = ?""", (stock_id,))
+    stock = cursor.fetchone()
+    print(stock['symbol'])
+    df = backtesting_macd.BackTestingMACD(backtesting_macd.GetPastData(stock['symbol']))
 
     MACD = [float(i) for i in df['MACD']]
     e9 = [float(i) for i in df['e9']]
@@ -275,9 +279,12 @@ def backtesting(request: Request, symbol):
     dates = [str(i) for i in df['Date']]
 
     df_filtred = df[(df.Order == 'buy') | (df.Order == 'sell')]
-    print(df_filtred)
+    closes_order = [float(i) for i in df_filtred['Close']]
     
-    return templates.TemplateResponse("backtesting_macd.html", {"request": request, "stock": row, "MACD": MACD, 'e9': e9, "closes": closes, "dates": dates, "df_order": df_filtred.to_dict(orient='records')})
+    benefice = backtesting_macd.CalculateBenef(df)
+    print(benefice)
+    
+    return templates.TemplateResponse("backtesting_macd.html", {"request": request, "stock": stock, "MACD": MACD, 'e9': e9, "closes": closes, "dates": dates,"closes_order": closes_order , "df_order": df_filtred.to_dict(orient='records'), "benefice": benefice})
 
 @app.get("/test")
 def test(request: Request):
