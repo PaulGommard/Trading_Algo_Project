@@ -28,6 +28,7 @@ for row in rows:
         cursor.execute("""INSERT INTO backtesting_macd (stock_id, date, benefice, volume_order)
         VALUES (?,?,?,?)
         """, (row['id'], date, benefice, len(df),))
+        print(f"The benefice of {row['symbol']} is insert into the database")
     except:
         cursor.execute("""INSERT INTO backtesting_macd (stock_id, date, benefice, volume_order)
         VALUES (?,?,?,?)

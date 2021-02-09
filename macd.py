@@ -24,10 +24,12 @@ def ApplyStrategy(symbol):
         select order_statue from order_status_stock where strategy_id = (?) AND stock_id = (?) ORDER BY date DESC
         """, (strategy_id,stock_id),)
 
-        last_order_statue = cursor.fetchone()
-
-        if last_order_statue is None:
+        last_order = cursor.fetchone()
+      
+        if last_order is None:
             last_order_statue = 'sell'
+        else:
+            last_order_statue = last_order['order_statue']
     
         row = len(df) - 1
         if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9'] and last_order_statue == 'sell':

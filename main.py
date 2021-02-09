@@ -300,6 +300,34 @@ def apply_backtesting(request: Request, stock_id):
     
     return templates.TemplateResponse("backtesting_macd.html", {"request": request, "stock": stock, "MACD": MACD, 'e9': e9, "closes": closes, "dates": dates,"closes_order": closes_order , "df_order": df_filtred.to_dict(orient='records'), "benefice": benefice})
 
+
+@app.get("/strategies")
+def strategy(request: Request, strategy_id):
+    # Get the app data already created
+    connection = sqlite3.connect(config.DATA_BASE)
+    connection.row_factory = sqlite3.Row
+
+    # Create connection
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT id, name
+        FROM strategy
+        WHERE id = ?
+        """, (strategy_id,))
+
+    strategy = cursor.fetchone()
+
+    cursor.execute("""
+        SELECT stock_id, date, benefice, volume_order
+        FROM backtesting_macd JOIN stock_strategy on stock_strategy.stock_id = stock.id
+        WHERE strategy_id = ?
+        """, (strategy_id,))
+    
+    stocks = cursor.fetchall()
+
+    return templates.TemplateResponse("strategy.html", {"request": request, "stocks": stocks, "strategy": strategy})
+
 @app.get("/test")
 def test(request: Request):
 

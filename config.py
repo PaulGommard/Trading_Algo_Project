@@ -1,5 +1,5 @@
 BASE_URL = 'https://paper-api.alpaca.markets'
-API_KEY = 'PKE6K5OLI8P5EWOTBBJX'
-SECRET_KEY = 'Va7ZT96WNSZgDnVXamrt8qZ6usK5sYpBAoHiWyZv'
+API_KEY = 'PKDZN9FK80I2S1FVTFOP'
+SECRET_KEY = 'y8tCMK83mHy3jo07n4YFkT5LAsIeMEJsUeq6lTQR'
 
 DATA_BASE = '/home/paulgommard/Projets/Trading_Algo_Project/app.db'
