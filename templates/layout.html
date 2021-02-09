@@ -1,14 +1,44 @@
+<!DOCTYPE html>
 <html>
     <head>
         <title>Stocks</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+        <link href="{{ url_for('static', path='/css/style.css') }}" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/a076d05399.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
     </head>
     <body>
-        <div class="ui container">
+        <!-- SIDE MENU -->
+        <div class="sidenav">
+            <input type="checkbox" id="btn" hidden>
+            <label for="btn" class="menu-btn">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-times"></i>
+            </label>
+            <nav id="sidebar">
+            <div class="title">Trading Bot</div>
+                <ul class="list-items">
+                <li><a href="/home"><i class="fas fa-home"></i>Home</a></li>
+                <li><a href="/stocks"><i class="fas fa-sliders-h"></i>Stocks</a></li>
+                <li><a href="#"><i class="fas fa-address-book"></i>Backtesting</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i>Settings</a></li>
+                    <div class="icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </ul>
+            </nav>
+        </div>
+        <!-- ---------------- -->
+
+        <div class="main">
+            <div class="ui container">
             {% block content %}
             
             {% endblock %}
         <div>
+        </div>
     <body>
 <html>

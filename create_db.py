@@ -81,7 +81,19 @@ cursor.execute("""
     )
 """)
 
-strategies = ['macd']
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS order_status_stock ( 
+        id INTEGER PRIMARY KEY, 
+        stock_id INTEGER, 
+        strategy_id INTEGER, 
+        date NOT NULL, 
+        order_statue NOT NULL, 
+        FOREIGN KEY (stock_id) REFERENCES stock (id)
+        FOREIGN KEY (strategy_id) REFERENCES strategy (id)
+    )
+""")
+
+# strategies = ['macd']
 
 # for strategy in strategies:
 #     cursor.execute("""

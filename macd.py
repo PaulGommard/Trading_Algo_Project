@@ -19,12 +19,31 @@ def ApplyStrategy(symbol):
         df['e26'] = df.close.ewm(span=26, adjust=False).mean()
         df['MACD'] = df['e12'] - df['e26']
         df['e9'] = df['MACD'].ewm(span=9, adjust=False).mean()
+
+        cursor.execute("""
+        select order_statue from order_status_stock where strategy_id = (?) AND stock_id = (?) ORDER BY date DESC
+        """, (strategy_id,stock_id),)
+
+        last_order_statue = cursor.fetchone()
+
+        if last_order_statue is None:
+            last_order_statue = 'sell'
     
-    row = len(df) - 1
-    if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9'] and df.loc[row, 'MACD'] < 0:
-        submit_orders.Buy(symbol)
-    elif df.loc[row, 'MACD'] < df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] > df.loc[row - 1, 'e9']:
-        submit_orders.Sell(symbol)
+        row = len(df) - 1
+        if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9'] and last_order_statue == 'sell':
+            submit_orders.Buy(symbol)
+            InsertInDataBase("buy")
+        elif df.loc[row, 'MACD'] < df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] > df.loc[row - 1, 'e9'] and last_order_statue == 'buy':
+            submit_orders.Sell(symbol)
+            InsertInDataBase("sell")
+
+
+def InsertInDataBase(order_statue):
+    cursor.execute("""
+        INSERT INTO order_status_stock (stock_id,strategy_id, date, order_statue) VALUES (?, ?, ?, ?)
+        """, (stock_id, strategy_id, datetime.now(),order_statue),)
+
+    connection.commit()
         
     
 connection = sqlite3.connect(config.DATA_BASE)
@@ -53,15 +72,12 @@ for symbol in symbols:
     """, (symbol,))
     stock_id = cursor.fetchone()['id']
 
-    df = pd.read_sql_query(f"""select * from stock_price_minutes where stock_id = ({stock_id}) ORDER BY date DESC""" ,connection)
-    print(df)
+    df = pd.read_sql_query(f"""select * from stock_price_minutes where stock_id = ({stock_id}) ORDER BY date ASC""" ,connection)
 
     ApplyStrategy(symbol)
 
     connection.commit()
 
-    
+
+
 connection.close()
-""" data = yf.Ticker(symbol)
-    df = data.history(interval='1m', start=GetPastDate(7), end=GetPastDate(0))
-    print(df) """

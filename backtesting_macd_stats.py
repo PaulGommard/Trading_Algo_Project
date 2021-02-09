@@ -1,15 +1,8 @@
 import yfinance as yf
 import pandas as pd
-from fastapi import FastAPI, Request
 import sqlite3, config
-import alpaca_trade_api as tradeapi
-import time
 import requests
-from bs4 import BeautifulSoup
 from datetime import date
-
-import submit_orders
-import pandas
 import backtesting_macd
 
 # Get the app data already created

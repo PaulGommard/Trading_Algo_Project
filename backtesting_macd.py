@@ -25,7 +25,7 @@ def GetPastData(symbol):
     # df2 = data.history(interval='1m', start=GetPastDate(21), end=GetPastDate(14))
     # df3 = data.history(interval='1m', start=GetPastDate(14), end=GetPastDate(7))
     try:
-        dataDF = data.history(interval='1m', start=GetPastDate(3), end=GetPastDate(0))
+        dataDF = data.history(interval='1m', start=GetPastDate(1), end=GetPastDate(0))
         del dataDF['Open']
         del dataDF['Dividends']
         del dataDF['Stock Splits']

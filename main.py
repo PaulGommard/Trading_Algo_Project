@@ -130,11 +130,25 @@ import json, random
 from django.shortcuts import render
 from random import sample
 import backtesting_macd
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
+from aiofiles.os import stat as aio_stat
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-@app.get("/")
+app.mount(
+    "/static",
+    StaticFiles(directory=Path(__file__).parent.parent.absolute() / "static"),
+    name="static",
+)
+
+@app.get("/home")
+def home(request: Request):
+
+    return templates.TemplateResponse("home.html", {"request": request})
+
+@app.get("/stocks")
 def index(request: Request):
     stock_filter = request.query_params.get('filter', False)
 
@@ -317,3 +331,4 @@ def test(request: Request):
     
     return templates.TemplateResponse("test.html", {"request": request, "stocks": closes, "dates": dates})
     
+

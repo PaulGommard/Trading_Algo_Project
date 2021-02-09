@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1><a href="/">Stocks </a> <i class="angle right icon"></i> {{ stock.name }}</h1>
+<h1><a href="/">Stocks </a> <i class="angle right icon"></i> {{ stock.name }}</h1>
 
   <!-- TradingView Widget BEGIN -->
 <div class="tradingview-widget-container">
@@ -75,7 +75,9 @@
     <input type="submit" value="Apply Strategy" />
 </form>
 <!-- Calculate backtesting stategy -->
+
 <form method="post" action="/backtesting">
+    
     <select name="strategy_id">
         {% for strategy in strategies %}
             <option value="{{ strategy.id }}">{{ strategy.name }}</option>
