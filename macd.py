@@ -25,25 +25,37 @@ def ApplyStrategy(symbol):
         """, (strategy_id,stock_id),)
 
         last_order = cursor.fetchone()
+
+        cursor.execute("""
+        select last_close from order_status_stock where strategy_id = (?) AND stock_id = (?) ORDER BY date DESC
+        """, (strategy_id,stock_id),)
+
+        last_close = cursor.fetchone()
       
         if last_order is None:
             last_order_statue = 'sell'
         else:
             last_order_statue = last_order['order_statue']
-    
+
+        if last_close is None:
+            last_close_statue = 0
+        else:
+            last_close_statue = last_close['last_close']
+
         row = len(df) - 1
-        if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9'] and last_order_statue == 'sell':
+        print(symbol)
+        if df.loc[row, 'MACD'] < 0 and df.loc[row - 1, 'MACD'] > 0 and last_order_statue == 'sell':
             submit_orders.Buy(symbol)
-            InsertInDataBase("buy")
-        elif df.loc[row, 'MACD'] < df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] > df.loc[row - 1, 'e9'] and last_order_statue == 'buy':
+            InsertInDataBase("buy", df.loc[row, 'close'])
+        elif df.loc[row, 'MACD'] > 0 and df.loc[row - 1, 'MACD'] < 0 and last_order_statue == 'buy' and last_close_statue < df.loc[row, 'close']:
             submit_orders.Sell(symbol)
-            InsertInDataBase("sell")
+            InsertInDataBase("sell", df.loc[row, 'close'])
 
 
-def InsertInDataBase(order_statue):
+def InsertInDataBase(order_statue, last_close):
     cursor.execute("""
-        INSERT INTO order_status_stock (stock_id,strategy_id, date, order_statue) VALUES (?, ?, ?, ?)
-        """, (stock_id, strategy_id, datetime.now(),order_statue),)
+        INSERT INTO order_status_stock (stock_id,strategy_id, date, order_statue, last_close) VALUES (?, ?, ?, ?, ?)
+        """, (stock_id, strategy_id, datetime.now(),order_statue, last_close),)
 
     connection.commit()
         
@@ -79,7 +91,6 @@ for symbol in symbols:
     ApplyStrategy(symbol)
 
     connection.commit()
-
 
 
 connection.close()

@@ -87,6 +87,7 @@ cursor.execute("""
         stock_id INTEGER, 
         strategy_id INTEGER, 
         date NOT NULL, 
+        last_close NOT NULL,
         order_statue NOT NULL, 
         FOREIGN KEY (stock_id) REFERENCES stock (id)
         FOREIGN KEY (strategy_id) REFERENCES strategy (id)

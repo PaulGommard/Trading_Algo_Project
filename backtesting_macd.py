@@ -47,12 +47,17 @@ def GetPastData(symbol):
     
 
 
-def BackTestingMACD(df):    
+def BackTestingMACD(df):
+    last_order_price = 0    
+    last_order = 'sell'
     for row in range(1, len(df)):
-        if df.loc[row, 'MACD'] > df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] < df.loc[row - 1, 'e9'] and df.loc[row, 'MACD'] < 0:
+        if df.loc[row, 'MACD'] < 0 and df.loc[row - 1, 'MACD'] > 0 and last_order == 'sell': 
             df.loc[row, 'Order'] = 'buy'
-        elif df.loc[row, 'MACD'] < df.loc[row, 'e9'] and df.loc[row - 1, 'MACD'] > df.loc[row - 1, 'e9']:
+            last_order_price = df.loc[row, 'Close']
+            last_order = 'buy'
+        elif df.loc[row, 'MACD'] > 0 and df.loc[row - 1, 'MACD'] < 0 and last_order_price < df.loc[row, 'Close'] and last_order == 'buy':
             df.loc[row, 'Order'] = 'sell'
+            last_order = 'sell'
         else:
             df.loc[row, 'Order'] = 'null'
     
@@ -65,24 +70,25 @@ def CalculateBenef(df):
         initial_budget = df.loc[0, 'Close']
         budget = initial_budget
         last_order = "sell"
+        last_order_price = 0
 
         for row in range(1, len(df)):
             if df.loc[row, 'Order'] == 'buy' and last_order == "sell":
                 budget = budget - df.loc[row, 'Close']
                 last_order = 'buy'
+                last_order_price = df.loc[row, 'Close']
             elif df.loc[row, 'Order'] == 'sell' and last_order == "buy": 
                 budget = budget + df.loc[row, 'Close']
                 last_order = "sell"
         
         if(last_order == 'buy'):
-            budget = budget + df.loc[len(df) - 1, 'Close']
+            budget = budget + last_order_price
             
         
         benefice = budget - initial_budget
         benefice = (benefice * 100) / initial_budget
 
     return benefice
-
 
 # connection = sqlite3.connect(config.DATA_BASE)
 # connection.row_factory = sqlite3.Row
