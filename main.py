@@ -284,7 +284,7 @@ def apply_backtesting(request: Request, stock_id):
     # Get symbol and company from the database
     cursor.execute("""SELECT id, symbol, name FROM stock WHERE id = ?""", (stock_id,))
     stock = cursor.fetchone()
-    print(stock['symbol'])
+    
     df = backtesting_macd.BackTestingMACD(backtesting_macd.GetPastData(stock['symbol']))
 
     MACD = [float(i) for i in df['MACD']]
@@ -302,7 +302,7 @@ def apply_backtesting(request: Request, stock_id):
 
 
 @app.get("/strategies")
-def strategy(request: Request, strategy_id):
+def stratefgy(request: Request, strategy_id):
     # Get the app data already created
     connection = sqlite3.connect(config.DATA_BASE)
     connection.row_factory = sqlite3.Row
